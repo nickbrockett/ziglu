@@ -34,7 +34,8 @@ This service exposes the following endpoints.
 ]
     
 2) [POST /sources] The list of RSS News Feed sources can be edited/changed. i.e. the above list can be reformulated.
-3) [GET /feeds?provider?category] All RSS News items that optionally satisfy a provider/and or category filter (e.g. http://localhost:8080/feeds?provider=bbc&category=news) will support the Client to display a scollable set of related news items. Note. The individual news item can be retrieved using its KEY identifier from the service. Short example output given here [
+3) [GET /feeds{?provider,category}] All RSS News items that optionally satisfy a provider/and or category filter (e.g. http://localhost:8080/feeds?provider=bbc&category=news) will support the Client to display a scollable set of related news items. Note. The individual news item is given its KEY identifier from the service. Short example output given here 
+4) [
     {
         "Title": "Covid in Wales: Lockdown review 'will give hospitality certainty'",
         "Link": "https://www.bbc.co.uk/news/uk-wales-56551184",
@@ -50,7 +51,8 @@ This service exposes the following endpoints.
         "Key": "WgjjXFyVAbI8dGYg2sx9pQ3q0wbMitIIROpd7RDw26o="
     }
     ]
-4) [GET /feeds/:feed_id] A single RSS News Item, retrieved by unique hash value. e.g. http://localhost:8080/feeds/WgjjXFyVAbI8dGYg2sx9pQ3q0wbMitIIROpd7RDw26o= will produce a HTML output for that item, with the response cached for performance for future and repeated access. Example output below 
+    
+4) [GET /feeds/{feed_id}] A single RSS News Item, retrieved by unique hash value. e.g. http://localhost:8080/feeds/WgjjXFyVAbI8dGYg2sx9pQ3q0wbMitIIROpd7RDw26o= will produce a HTML output for that item, with the response cached for performance for future and repeated access. Example output below 
 5) <html>
 
 <head>
