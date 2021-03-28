@@ -1,4 +1,4 @@
-# Makefile to build Golang service and Docker image
+# Makefile to build Golang service
 
 # Service
 SERVICE_DIR := service
