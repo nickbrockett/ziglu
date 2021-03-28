@@ -80,3 +80,12 @@ func (p Providers) FilterAddressesByCategory(category string) (result []string) 
 
 }
 
+// GetNewsSources returns addresses available to search.
+func GetNewsSources(provider, category string) []string {
+
+	// apply filters to provide a refined list of addresses.
+	feedProviders := GetProviders().FilterByProvider(provider)
+	feedAddresses := feedProviders.FilterAddressesByCategory(category)
+
+	return feedAddresses
+}

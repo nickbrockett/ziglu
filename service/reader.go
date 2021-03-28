@@ -8,8 +8,6 @@ import (
 	"net/http"
 	"sort"
 	"time"
-
-	"priva.te/ziglu/lib"
 )
 
 //Item contains a news item
@@ -32,20 +30,48 @@ type Channel struct {
 	Items []Item `xml:"item"`
 }
 
-//Rss is a RSS Feed Channel
 type Rss struct {
 	Channel Channel `xml:"channel"`
 }
 
-// rssReader will visit the provided URL and decode XML into a RSS Channel Struct.
-func rssReader(address string) Rss {
+//ChannelReader visits source website and returns a list of news items.
+type ChannelReader func(s string) Items
 
+type Reader struct {
+	sources       []string
+	channelReader ChannelReader
+	items         Items
+}
+
+func NewReader(sources []string, channelReader ChannelReader) Reader {
+	return Reader{
+		sources:       sources,
+		channelReader: channelReader,
+		items:         Items{},
+	}
+}
+
+func (r *Reader) Read() {
+
+	for _, v := range r.sources {
+		r.items = append(r.items, r.channelReader(v)...)
+	}
+	// additional processing to ensure date order, and a unique retrievable reference.
+	r.items.dateOrderedItems()
+	r.items.hashItemKey()
+}
+
+// RSSReader (the default implementation) will visit the provided URL and decode XML into a RSS Channel Struct.
+// then convert to a slice of actual news items.
+func RSSReader(address string) Items {
+
+	var allItems Items
 	rss := Rss{}
 
 	resp, err := http.Get(address)
 	if err != nil {
 		fmt.Printf("Error GET: %v\n", err)
-		return rss
+		return nil
 	}
 	defer resp.Body.Close()
 
@@ -53,9 +79,12 @@ func rssReader(address string) Rss {
 	err = decoder.Decode(&rss)
 	if err != nil {
 		fmt.Printf("Error Decode: %v\n", err)
-		return rss
+		return nil
 	}
-	return rss
+	for k := range rss.Channel.Items {
+		allItems = append(allItems, &rss.Channel.Items[k])
+	}
+	return allItems
 }
 
 // dateOrderedItems returns a date desc slice of news items.
@@ -83,34 +112,8 @@ func (items Items) dateOrderedItems() {
 
 }
 
-//getFeedItems returns a slice of news items.
-func getFeedItems(provider, category string) Items {
-
-	var allItems Items
-
-	// apply filters to provide a refined list of addresses.
-	feedProviders := lib.GetProviders().FilterByProvider(provider)
-	feedAddresses := feedProviders.FilterAddressesByCategory(category)
-
-	for _, address := range feedAddresses {
-		rss := rssReader(address)
-		//retain pointers to the rss items returned.
-		for k := range rss.Channel.Items {
-			allItems = append(allItems, &rss.Channel.Items[k])
-		}
-	}
-
-	if allItems != nil {
-		allItems.dateOrderedItems()
-	}
-
-	hashItemKey(allItems)
-
-	return allItems
-}
-
 //hashItemKey converts news item unique reference to a hash.
-func hashItemKey(items Items) {
+func (items Items) hashItemKey() {
 
 	for _, v := range items {
 		shaBytes := sha256.Sum256([]byte(v.Key))

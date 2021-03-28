@@ -56,13 +56,16 @@ func setSources(c *gin.Context) {
 
 func searchFeeds(c *gin.Context) {
 
-	items := getFeedItems(c.Query("provider"), c.Query("category"))
-	if items == nil || len(items) == 0 {
+	sources := lib.GetNewsSources(c.Query("provider"), c.Query("category"))
+	r := NewReader(sources, RSSReader)
+	r.Read()
+
+	if r.items == nil || len(r.items) == 0 {
 		c.Data(http.StatusOK, "application/json", emptyArray)
 		return
 	}
 
-	c.JSON(http.StatusOK, items)
+	c.JSON(http.StatusOK, r.items)
 
 }
 
@@ -76,9 +79,11 @@ func searchFeed(c *gin.Context) {
 		return
 	}
 
-	items := getFeedItems("", "")
+	sources := lib.GetNewsSources("", "")
+	r := NewReader(sources, RSSReader)
+	r.Read()
 
-	for _, v := range items {
+	for _, v := range r.items {
 		if v.Key == searchKey {
 			itemCache.Add(searchKey, *v)
 			displayHTMLItem(c, v)

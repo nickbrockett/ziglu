@@ -64,32 +64,20 @@ func TestFeedItemNotFound(t *testing.T) {
 }
 
 func TestFeedItemFound(t *testing.T) {
-	r := getRouter(true)
 
-	r.GET("/feeds/:feedID", searchFeed)
+	assert.Nil(t, json.Unmarshal(testItems, &testFeedItems))
 
-	// Create a request to send to the above route
-	req, _ := http.NewRequest("GET", "/feeds/abc", nil)
+	// test implementation of channel reader
+	chr := func(s string) Items { return  testFeedItems}
+	r := NewReader([]string{"a"}, chr)
+	r.Read()
 
-	testHTTPResponse(t, r, req, func(w *httptest.ResponseRecorder) bool {
+	assert.Equal(t, testFeedItems, r.items)
 
-		t.Logf("njb we have %d ", w.Code)
-		//
-		//statusOK := w.Code == http.StatusOK
-		//
-		//// Test that the page title is "Home Page"
-		//// You can carry out a lot more detailed tests using libraries that can
-		//// parse and process HTML pages
-		//p, err := ioutil.ReadAll(w.Body)
-		//pageOK := err == nil && strings.Index(string(p), "<title>Home Page</title>") > 0
-		//
-		//return statusOK && pageOK
-		// Test that the http status code is 404
-		return w.Code == http.StatusNotFound
-	})
 }
 
 var testItems = []byte(`
+	[
     {
         "Title": "Easter celebrations set to rival Christmas - even down to the tree",
         "Link": "https://www.bbc.co.uk/news/business-56541002",
@@ -103,5 +91,6 @@ var testItems = []byte(`
         "Desc": "Dexter used to work as a sniffer dog for the Met but he was \"too sociable\" for the job.",
         "PubDate": "Sun, 28 Mar 2021 00:00:57 GMT",
         "Key": "xUmj7E0DXrEFqdp_MEzM27rnNzirPBlrRSZ0v8bkPlA="
-    },
+    }
+	]
 `)
