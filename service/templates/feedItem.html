@@ -1,0 +1,15 @@
+<!--feedItem.html-->
+
+<!--Embed the header.html template at this location-->
+{{ template "header.html" .}}
+
+<h2>News Item</h2>
+<!--Create the link for the news item-->
+<a href="{{.payload.Link}}">
+    <!--Display the title of the item -->
+    <h3>{{.payload.Title}}</h3>
+</a>
+<p>{{.payload.Desc}}</p><p>{{.payload.PubDate}}</p>
+
+<!--Embed the footer.html template at this location-->
+{{ template "footer.html" .}}
