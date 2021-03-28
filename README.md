@@ -4,19 +4,17 @@ This service exposes the following endpoints.
 1) [GET /sources] A list of RSS News Feed sources can be retrieved. (Comprising a Provider and a list of their News Categories with URI)
     e.g. http://localhost:8080/sources which demonstates a default set of providers with associated categories and links.
     
-    
-    
-    [
+   [
     {
         "name": "bbc",
         "categories": [
             {
                 "name": "news",
-                "category": "http://feeds.bbci.co.uk/news/uk/rss.xml"
+                "address": "http://feeds.bbci.co.uk/news/uk/rss.xml"
             },
             {
                 "name": "technology",
-                "category": "http://feeds.bbci.co.uk/news/technology/rss.xml"
+                "address": "http://feeds.bbci.co.uk/news/technology/rss.xml"
             }
         ]
     },
@@ -25,11 +23,11 @@ This service exposes the following endpoints.
         "categories": [
             {
                 "name": "news",
-                "category": "http://feeds.skynews.com/feeds/rss/uk.xml"
+                "address": "http://feeds.skynews.com/feeds/rss/uk.xml"
             },
             {
                 "name": "technology",
-                "category": "http://feeds.skynews.com/feeds/rss/technology.xml"
+                "address": "http://feeds.skynews.com/feeds/rss/technology.xml"
             }
         ]
     }
